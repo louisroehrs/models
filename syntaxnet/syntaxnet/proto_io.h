@@ -117,6 +117,16 @@ class StdIn : public tensorflow::RandomAccessFile {
       eof_ = !std::getline(std::cin, line);
       buffer_.append(line);
       buffer_.append("\n");
+// Added LFR < JoshData
+      if (line == "") {
+        // Stop reading after two blank lines.
+        num_blank_lines_++;
+        if (num_blank_lines_ == 2)
+          eof_ = true;
+      } else {
+        num_blank_lines_ = 0;
+      }
+// End Added
     }
     CopyFromBuffer(std::min(buffer_.size(), n), result, scratch);
     if (eof_) {
@@ -135,6 +145,9 @@ class StdIn : public tensorflow::RandomAccessFile {
     expected_offset_ += n;
   }
 
+// Added LFR < JoshData
+  mutable int num_blank_lines_ = 0;
+// End Added
   mutable bool eof_ = false;
   mutable int64 expected_offset_ = 0;
   mutable string buffer_;
